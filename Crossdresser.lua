@@ -41,7 +41,7 @@ end
 
 local lastgroup
 function f:PLAYER_LOGIN()
-	lastgroup = GetActiveSpecGroup()
+	lastgroup = GetSpecialization()
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 
 	self:UnregisterEvent("PLAYER_LOGIN")
@@ -50,9 +50,9 @@ end
 
 
 function f:ACTIVE_TALENT_GROUP_CHANGED()
-	if lastgroup == GetActiveSpecGroup() then return end
+	if lastgroup == GetSpecialization() then return end
 
-	lastgroup = GetActiveSpecGroup()
+	lastgroup = GetSpecialization()
 	local name = dbpc[lastgroup]
 	Debug("Talent switch detected", lastgroup)
 	if not name then return end

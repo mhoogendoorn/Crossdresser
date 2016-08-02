@@ -32,8 +32,11 @@ frame:SetScript("OnShow", function(frame)
 	if not IsAddOnLoaded("Blizzard_TalentUI") then LoadAddOn("Blizzard_TalentUI") end
 
 	local groups = {}
-	for g=1,2 do
-		local group = LibStub("tekKonfig-Group").new(frame, g == 1 and "Primary Talent Set" or "Secondary Talent Set")
+	local n_specs = GetNumSpecializations(false, false)
+	for g=1,n_specs do
+		_, spec_name, _, _, _, _, _ = GetSpecializationInfo(g, false, false)
+		local group = LibStub("tekKonfig-Group").new(frame, spec_name)
+		group.label:SetText("|cffffffff".. spec_name)
 		group:SetHeight(EDGEGAP*2 + ICONSIZE)
 		group:SetPoint("LEFT", EDGEGAP, 0)
 		group:SetPoint("RIGHT", -EDGEGAP, 0)
@@ -72,17 +75,12 @@ frame:SetScript("OnShow", function(frame)
 	end
 
 	groups[1]:SetPoint("TOP", subtitle, "BOTTOM", -2, -GAP-EDGEGAP)
-	groups[2]:SetPoint("TOP", groups[1], "BOTTOM", 0, -EDGEGAP)
+	for g=2,n_specs do
+	  groups[g]:SetPoint("TOP", groups[g-1], "BOTTOM", 0, -EDGEGAP)
+	end
 
 
 	function Update()
-		-- GetActiveSpecGroup
-		local primary, secondary = GetSpecialization(nil, nil, 1), GetSpecialization(nil, nil, 2)
-		local primary_name = primary and (" |cffffffff(".. select(2, GetSpecializationInfo(primary)).. ")") or ""
-		local secondary_name = secondary and (" |cffffffff(".. select(2, GetSpecializationInfo(secondary)).. ")") or ""
-		groups[1].label:SetText("Primary Talent Set".. primary_name)
-		groups[2].label:SetText("Secondary Talent Set".. secondary_name)
-
 		for i,group in pairs(groups) do
 			for _,butt in pairs(group.buttons) do
 				local name, tex = GetEquipmentSetInfo(butt.i)
